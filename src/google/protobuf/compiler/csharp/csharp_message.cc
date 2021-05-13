@@ -137,9 +137,10 @@ void MessageGenerator::Generate(io::Printer* printer) {
   printer->Indent();
 
   // All static fields and properties
+  printer->Print(vars, "private static $class_name$ _staticObj = new $class_name$();\n");
   printer->Print(
       vars,
-      "private static readonly pb::MessageParser<$class_name$> _parser = new pb::MessageParser<$class_name$>(() => new $class_name$());\n");
+      "private static readonly pb::MessageParser<$class_name$> _parser = new pb::MessageParser<$class_name$>(() => _staticObj);\n");
 
   printer->Print(
       "private pb::UnknownFieldSet _unknownFields;\n");
@@ -205,6 +206,20 @@ void MessageGenerator::Generate(io::Printer* printer) {
 
   GenerateCloningCode(printer);
   GenerateFreezingCode(printer);
+
+  // Generate Clear function
+  WriteGeneratedCodeAttributes(printer);
+  printer->Print("public void Clear() {\n");
+  printer->Indent();
+  for (int i = 0; i < descriptor_->field_count(); i++) {
+      const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
+      std::unique_ptr<FieldGeneratorBase> generator(
+          CreateFieldGeneratorInternal(fieldDescriptor));
+      generator->GenerateResetCode(printer);
+      printer->Print("\n");
+  }
+  printer->Outdent();
+  printer->Print("}\n\n");
 
   // Fields/properties
   for (int i = 0; i < descriptor_->field_count(); i++) {

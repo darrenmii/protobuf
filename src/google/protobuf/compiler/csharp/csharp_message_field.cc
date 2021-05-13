@@ -204,6 +204,10 @@ void MessageFieldGenerator::GenerateCodecCode(io::Printer* printer) {
   }
 }
 
+void MessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
+    printer->Print(variables_, "$name$_.Clear();");
+}
+
 MessageOneofFieldGenerator::MessageOneofFieldGenerator(
     const FieldDescriptor* descriptor,
 	  int presenceIndex,

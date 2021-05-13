@@ -139,6 +139,10 @@ void RepeatedPrimitiveFieldGenerator::GenerateExtensionCode(io::Printer* printer
     "  new pb::RepeatedExtension<$extended_type$, $type_name$>($number$, pb::FieldCodec.For$capitalized_type_name$($tag$));\n");
 }
 
+void RepeatedPrimitiveFieldGenerator::GenerateResetCode(io::Printer* printer) {
+    printer->Print(variables_, "$name$_.Clear();");
+}
+
 }  // namespace csharp
 }  // namespace compiler
 }  // namespace protobuf

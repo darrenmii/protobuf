@@ -122,6 +122,10 @@ void RepeatedMessageFieldGenerator::GenerateSerializedSizeCode(io::Printer* prin
     "size += $name$_.CalculateSize(_repeated_$name$_codec);\n");
 }
 
+void RepeatedMessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
+    printer->Print(variables_, "$name$_.Clear();");
+}
+
 void RepeatedMessageFieldGenerator::WriteHash(io::Printer* printer) {
   printer->Print(
     variables_,
