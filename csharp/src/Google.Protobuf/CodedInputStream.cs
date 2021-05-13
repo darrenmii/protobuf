@@ -61,18 +61,18 @@ namespace Google.Protobuf
         /// Whether to leave the underlying stream open when disposing of this stream.
         /// This is always true when there's no stream.
         /// </summary>
-        private readonly bool leaveOpen;
+        private bool leaveOpen;
 
         /// <summary>
         /// Buffer of data read from the stream or provided at construction time.
         /// </summary>
-        private readonly byte[] buffer;
+        private byte[] buffer;
 
         /// <summary>
         /// The stream to read further input from, or null if the byte array buffer was provided
         /// directly on construction, with no further data available.
         /// </summary>
-        private readonly Stream input;
+        private Stream input;
 
         /// <summary>
         /// The parser state is kept separately so that other parse implementations can reuse the same
@@ -87,6 +87,13 @@ namespace Google.Protobuf
         #region Construction
         // Note that the checks are performed such that we don't end up checking obviously-valid things
         // like non-null references for arrays we've just created.
+
+        /// <summary>
+        /// Creates a new empty CodedInputStream.
+        /// </summary>
+        public CodedInputStream()
+        {
+        }
 
         /// <summary>
         /// Creates a new CodedInputStream reading data from the given byte array.
@@ -173,6 +180,63 @@ namespace Google.Protobuf
             this.state.recursionLimit = recursionLimit;
         }
         #endregion
+
+        /// <summary>
+        /// Reading data from the given byte array.
+        /// </summary>
+        public void SetBuffer(byte[] buffer)
+        {
+            SetBuffer(null, ProtoPreconditions.CheckNotNull(buffer, "buffer"), 0, buffer.Length, true);
+        }
+
+        /// <summary>
+        /// Reads from the given byte array slice.
+        /// </summary>
+        public void SetBuffer(byte[] buffer, int offset, int length)
+        {
+            SetBuffer(null, ProtoPreconditions.CheckNotNull(buffer, "buffer"), offset, offset + length, true);
+
+            if (offset < 0 || offset > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("offset", "Offset must be within the buffer");
+            }
+            if (length < 0 || offset + length > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("length", "Length must be non-negative and within the buffer");
+            }
+        }
+
+        /// <summary>
+        /// Reading data from the given stream, which will be disposed
+        /// when the returned object is disposed.
+        /// </summary>
+        public void SetBuffer(Stream input)
+        {
+            SetBuffer(input, false);
+        }
+
+        internal static byte[] staticBuffer = new byte[BufferSize];
+
+        /// <summary>
+        /// Reading data from the given stream.
+        /// </summary>
+        public void SetBuffer(Stream input, bool leaveOpen)
+        {
+            SetBuffer(ProtoPreconditions.CheckNotNull(input, "input"), staticBuffer, 0, 0, leaveOpen);
+        }
+
+        internal void SetBuffer(Stream input, byte[] buffer, int bufferPos, int bufferSize, bool leaveOpen)
+        {
+            this.buffer = buffer;
+            this.state.bufferPos = bufferPos;
+            this.state.bufferSize = bufferSize;
+            this.state.sizeLimit = DefaultSizeLimit;
+            this.state.recursionLimit = DefaultRecursionLimit;
+            SegmentedBufferHelper.Initialize(this, out this.state.segmentedBufferHelper);
+            this.leaveOpen = leaveOpen;
+
+            this.state.currentLimit = int.MaxValue;
+        }
 
         /// <summary>
         /// Creates a <see cref="CodedInputStream"/> with the specified size and recursion limits, reading

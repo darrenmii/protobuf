@@ -239,27 +239,31 @@ namespace Google.Protobuf
                 });
         }
 
+        internal static CodedInputStream _input = new CodedInputStream();
+
         // Implementations allowing unknown fields to be discarded.
         internal static void MergeFrom(this IMessage message, byte[] data, bool discardUnknownFields, ExtensionRegistry registry)
         {
             ProtoPreconditions.CheckNotNull(message, "message");
             ProtoPreconditions.CheckNotNull(data, "data");
-            CodedInputStream input = new CodedInputStream(data);
-            input.DiscardUnknownFields = discardUnknownFields;
-            input.ExtensionRegistry = registry;
-            message.MergeFrom(input);
-            input.CheckReadEndOfStreamTag();
+            //CodedInputStream input = new CodedInputStream(data);
+            _input.SetBuffer(data);
+            _input.DiscardUnknownFields = discardUnknownFields;
+            _input.ExtensionRegistry = registry;
+            message.MergeFrom(_input);
+            _input.CheckReadEndOfStreamTag();
         }
 
         internal static void MergeFrom(this IMessage message, byte[] data, int offset, int length, bool discardUnknownFields, ExtensionRegistry registry)
         {
             ProtoPreconditions.CheckNotNull(message, "message");
             ProtoPreconditions.CheckNotNull(data, "data");
-            CodedInputStream input = new CodedInputStream(data, offset, length);
-            input.DiscardUnknownFields = discardUnknownFields;
-            input.ExtensionRegistry = registry;
-            message.MergeFrom(input);
-            input.CheckReadEndOfStreamTag();
+            //CodedInputStream input = new CodedInputStream(data, offset, length);
+            _input.SetBuffer(data, offset, length);
+            _input.DiscardUnknownFields = discardUnknownFields;
+            _input.ExtensionRegistry = registry;
+            message.MergeFrom(_input);
+            _input.CheckReadEndOfStreamTag();
         }
 
         internal static void MergeFrom(this IMessage message, ByteString data, bool discardUnknownFields, ExtensionRegistry registry)
@@ -277,11 +281,12 @@ namespace Google.Protobuf
         {
             ProtoPreconditions.CheckNotNull(message, "message");
             ProtoPreconditions.CheckNotNull(input, "input");
-            CodedInputStream codedInput = new CodedInputStream(input);
-            codedInput.DiscardUnknownFields = discardUnknownFields;
-            codedInput.ExtensionRegistry = registry;
-            message.MergeFrom(codedInput);
-            codedInput.CheckReadEndOfStreamTag();
+            //CodedInputStream codedInput = new CodedInputStream(input);
+            _input.SetBuffer(input);
+            _input.DiscardUnknownFields = discardUnknownFields;
+            _input.ExtensionRegistry = registry;
+            message.MergeFrom(_input);
+            _input.CheckReadEndOfStreamTag();
         }
 
         [SecuritySafeCritical]

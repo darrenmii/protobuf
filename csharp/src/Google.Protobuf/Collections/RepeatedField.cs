@@ -59,6 +59,15 @@ namespace Google.Protobuf.Collections
 
         private T[] array = EmptyArray;
         private int count = 0;
+        private Guid g_;
+
+        public RepeatedField()
+        {
+            g_ = Guid.NewGuid();
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+            Console.WriteLine($"RepeatedField Guid: {g_}");
+#endif
+        }
 
         /// <summary>
         /// Creates a deep clone of this repeated field.
@@ -73,6 +82,9 @@ namespace Google.Protobuf.Collections
         /// <returns>A deep clone of this repeated field.</returns>
         public RepeatedField<T> Clone()
         {
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+            Console.WriteLine($"{GetType()} Clone");
+#endif
             RepeatedField<T> clone = new RepeatedField<T>();
             if (array != EmptyArray)
             {
@@ -120,6 +132,9 @@ namespace Google.Protobuf.Collections
             // iteration.
             uint tag = ctx.state.lastTag;
             var reader = codec.ValueReader;
+//#if NETSTANDARD2_0 || NET40_OR_GREATER
+//            Console.WriteLine($"{typeof(T)} AddEntriesFrom");
+//#endif
             // Non-nullable value types can be packed or not.
             if (FieldCodec<T>.IsPackedRepeatedField(tag))
             {
@@ -135,6 +150,9 @@ namespace Google.Protobuf.Collections
                     // That prevents a malicious length from initializing a very large collection.
                     if (codec.FixedSize > 0 && length % codec.FixedSize == 0 && ParsingPrimitives.IsDataAvailable(ref ctx.state, length))
                     {
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+                        Console.WriteLine($"{typeof(T)} AddEntriesFrom 1");
+#endif
                         EnsureSize(count + (length / codec.FixedSize));
 
                         while (!SegmentedBufferHelper.IsReachedLimit(ref ctx.state))
@@ -147,10 +165,19 @@ namespace Google.Protobuf.Collections
                     }
                     else
                     {
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+                        Console.WriteLine($"{typeof(T)} AddEntriesFrom 2, Guid: {g_}");
+#endif
                         // Content is variable size so add until we reach the limit.
                         while (!SegmentedBufferHelper.IsReachedLimit(ref ctx.state))
                         {
-                            Add(reader(ref ctx));
+                            if (count < array.Length)
+                            {
+                                T item = array[count++];
+                                ctx.ReadMessage((IMessage)item);
+                            }
+                            else
+                                Add(reader(ref ctx));
                         }
                     }
                     SegmentedBufferHelper.PopLimit(ref ctx.state, oldLimit);
@@ -308,6 +335,9 @@ namespace Google.Protobuf.Collections
         // May increase the size of the internal array, but will never shrink it.
         private void EnsureSize(int size)
         {
+//#if NETSTANDARD2_0 || NET40_OR_GREATER
+//            Console.WriteLine($"{GetType()}, array.Length: {array.Length}, size: {size}");
+//#endif
             if (array.Length < size)
             {
                 size = Math.Max(size, MinArraySize);
@@ -321,6 +351,10 @@ namespace Google.Protobuf.Collections
         {
             if (size != array.Length)
             {
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+                Console.WriteLine($"{GetType()} SetSize, array.Length: {array.Length}, size: {size}");
+                //Console.WriteLine($"{new System.Diagnostics.StackTrace()}");
+#endif
                 var tmp = new T[size];
                 Array.Copy(array, 0, tmp, 0, count);
                 array = tmp;
@@ -343,7 +377,11 @@ namespace Google.Protobuf.Collections
         /// </summary>
         public void Clear()
         {
-            array = EmptyArray;
+#if NETSTANDARD2_0 || NET40_OR_GREATER
+                Console.WriteLine($"{GetType()} Clear");
+                //Console.WriteLine($"{new System.Diagnostics.StackTrace()}");
+#endif
+            //array = EmptyArray;
             count = 0;
         }
 
