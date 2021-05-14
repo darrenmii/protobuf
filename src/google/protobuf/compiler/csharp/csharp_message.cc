@@ -137,10 +137,9 @@ void MessageGenerator::Generate(io::Printer* printer) {
   printer->Indent();
 
   // All static fields and properties
-  printer->Print(vars, "private static $class_name$ _staticObj = new $class_name$();\n");
   printer->Print(
       vars,
-      "private static readonly pb::MessageParser<$class_name$> _parser = new pb::MessageParser<$class_name$>(() => _staticObj);\n");
+      "private static readonly pb::MessageParser<$class_name$> _parser = new pb::MessageParser<$class_name$>(() => new $class_name$());\n");
 
   printer->Print(
       "private pb::UnknownFieldSet _unknownFields;\n");
@@ -216,7 +215,6 @@ void MessageGenerator::Generate(io::Printer* printer) {
       std::unique_ptr<FieldGeneratorBase> generator(
           CreateFieldGeneratorInternal(fieldDescriptor));
       generator->GenerateResetCode(printer);
-      printer->Print("\n");
   }
   printer->Outdent();
   printer->Print("}\n\n");
@@ -692,6 +690,7 @@ void MessageGenerator::GenerateMergingMethods(io::Printer* printer) {
   WriteGeneratedCodeAttributes(printer);
   printer->Print("void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {\n");
   printer->Indent();
+  printer->Print("Clear();\n");
   GenerateMainParseLoop(printer, true);
   printer->Outdent();
   printer->Print("}\n"); // method

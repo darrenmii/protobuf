@@ -269,7 +269,7 @@ void PrimitiveFieldGenerator::GenerateExtensionCode(io::Printer* printer) {
 }
 
 void PrimitiveFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_, "$name$_ = $default_value$;");
+    printer->Print(variables_, "$name$_ = $default_value$;\n");
 }
 
 PrimitiveOneofFieldGenerator::PrimitiveOneofFieldGenerator(

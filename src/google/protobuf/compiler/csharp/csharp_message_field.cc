@@ -205,7 +205,7 @@ void MessageFieldGenerator::GenerateCodecCode(io::Printer* printer) {
 }
 
 void MessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_, "$name$_.Clear();");
+    printer->Print(variables_, "$name$_.Clear();\n");
 }
 
 MessageOneofFieldGenerator::MessageOneofFieldGenerator(

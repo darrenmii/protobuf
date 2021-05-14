@@ -123,7 +123,11 @@ void RepeatedMessageFieldGenerator::GenerateSerializedSizeCode(io::Printer* prin
 }
 
 void RepeatedMessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_, "$name$_.Clear();");
+    printer->Print(variables_,
+        "for (int i = 0; i < $name$_.Count; i++)\n"
+        "  $name$_[i].Clear();\n"
+        "$name$_.Clear();\n"
+    );
 }
 
 void RepeatedMessageFieldGenerator::WriteHash(io::Printer* printer) {

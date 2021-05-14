@@ -140,7 +140,7 @@ void RepeatedPrimitiveFieldGenerator::GenerateExtensionCode(io::Printer* printer
 }
 
 void RepeatedPrimitiveFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_, "$name$_.Clear();");
+    printer->Print(variables_, "$name$_.Clear();\n");
 }
 
 }  // namespace csharp
