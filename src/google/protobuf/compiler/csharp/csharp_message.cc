@@ -206,19 +206,6 @@ void MessageGenerator::Generate(io::Printer* printer) {
   GenerateCloningCode(printer);
   GenerateFreezingCode(printer);
 
-  // Generate Clear function
-  WriteGeneratedCodeAttributes(printer);
-  printer->Print("public void Clear() {\n");
-  printer->Indent();
-  for (int i = 0; i < descriptor_->field_count(); i++) {
-      const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
-      std::unique_ptr<FieldGeneratorBase> generator(
-          CreateFieldGeneratorInternal(fieldDescriptor));
-      generator->GenerateResetCode(printer);
-  }
-  printer->Outdent();
-  printer->Print("}\n\n");
-
   // Fields/properties
   for (int i = 0; i < descriptor_->field_count(); i++) {
     const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
@@ -577,6 +564,21 @@ void MessageGenerator::GenerateMessageSerializationMethods(io::Printer* printer)
     "}\n");
 
   printer->Print("return size;\n");
+  printer->Outdent();
+  printer->Print("}\n\n");
+  
+  WriteGeneratedCodeAttributes(printer);
+  printer->Print(
+    "public void Clear() {\n");
+  printer->Indent();
+  for (int i = 0; i < descriptor_->field_count(); i++) {
+      const FieldDescriptor* field = descriptor_->field(i);
+      if (field->real_containing_oneof()) {
+          continue;
+      }
+      std::unique_ptr<FieldGeneratorBase> generator(CreateFieldGeneratorInternal(field));
+      generator->GenerateClearCode(printer);
+  }
   printer->Outdent();
   printer->Print("}\n\n");
 }

@@ -184,6 +184,15 @@ void MessageFieldGenerator::GenerateExtensionCode(io::Printer* printer) {
   GenerateCodecCode(printer);
   printer->Print(");\n");
 }
+
+void MessageFieldGenerator::GenerateClearCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "if ($has_property_check$) {\n"
+    "  $property_name$.Clear();\n"
+    "}\n");
+}
+
 void MessageFieldGenerator::GenerateCloningCode(io::Printer* printer) {
   printer->Print(variables_,
     "$name$_ = other.$has_property_check$ ? other.$name$_.Clone() : null;\n");
@@ -202,10 +211,6 @@ void MessageFieldGenerator::GenerateCodecCode(io::Printer* printer) {
       variables_,
       "pb::FieldCodec.ForGroup($tag$, $end_tag$, $type_name$.Parser)");
   }
-}
-
-void MessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_, "$name$_.Clear();\n");
 }
 
 MessageOneofFieldGenerator::MessageOneofFieldGenerator(

@@ -123,6 +123,12 @@ void MapFieldGenerator::GenerateSerializedSizeCode(io::Printer* printer) {
     "size += $name$_.CalculateSize(_map_$name$_codec);\n");
 }
 
+void MapFieldGenerator::GenerateClearCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "for (int i = 0; i < $name$_.Count; i++)\n  $name$_[i].Clear();\n$name$_.Clear();\n");
+}
+
 void MapFieldGenerator::WriteHash(io::Printer* printer) {
   printer->Print(
     variables_,

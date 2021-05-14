@@ -173,10 +173,6 @@ void FieldGeneratorBase::GenerateSerializationCode(io::Printer* printer, bool us
   GenerateSerializationCode(printer);
 }
 
-void FieldGeneratorBase::GenerateResetCode(io::Printer* printer) {
-
-}
-
 void FieldGeneratorBase::AddDeprecatedFlag(io::Printer* printer) {
   if (descriptor_->options().deprecated()) {
     printer->Print("[global::System.ObsoleteAttribute]\n");

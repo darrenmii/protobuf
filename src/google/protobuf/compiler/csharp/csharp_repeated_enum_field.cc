@@ -139,6 +139,12 @@ void RepeatedEnumFieldGenerator::GenerateExtensionCode(io::Printer* printer) {
     "pb::FieldCodec.ForEnum($tag$, x => (int) x, x => ($type_name$) x));\n");
 }
 
+void RepeatedEnumFieldGenerator::GenerateClearCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "for (int i = 0; i < $name$_.Count; i++)\n  $name$_[i] = $default_value$;\n$name$_.Clear();\n");
+}
+
 void RepeatedEnumFieldGenerator::GenerateFreezingCode(io::Printer* printer) {
 }
 

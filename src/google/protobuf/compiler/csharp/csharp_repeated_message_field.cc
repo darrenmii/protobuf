@@ -122,14 +122,6 @@ void RepeatedMessageFieldGenerator::GenerateSerializedSizeCode(io::Printer* prin
     "size += $name$_.CalculateSize(_repeated_$name$_codec);\n");
 }
 
-void RepeatedMessageFieldGenerator::GenerateResetCode(io::Printer* printer) {
-    printer->Print(variables_,
-        "for (int i = 0; i < $name$_.Count; i++)\n"
-        "  $name$_[i].Clear();\n"
-        "$name$_.Clear();\n"
-    );
-}
-
 void RepeatedMessageFieldGenerator::WriteHash(io::Printer* printer) {
   printer->Print(
     variables_,
@@ -174,6 +166,11 @@ void RepeatedMessageFieldGenerator::GenerateExtensionCode(io::Printer* printer) 
     single_generator->GenerateCodecCode(printer);
   }
   printer->Print(");\n");
+}
+
+void RepeatedMessageFieldGenerator::GenerateClearCode(io::Printer* printer) {
+  printer->Print(variables_,
+    "for (int i = 0; i < $name$_.Count; i++)\n  $name$_[i].Clear();\n$name$_.Clear();\n");
 }
 
 }  // namespace csharp
