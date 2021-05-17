@@ -128,7 +128,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
     printer->Print(vars, "pb::IExtendableMessage<$class_name$>\n");
   }
   else {
-    printer->Print(vars, "pb::IMessage<$class_name$>\n");
+    printer->Print(vars, "pb::IMessage<$class_name$>, pb::IMessageClear<$class_name$>\n");
   }
   printer->Print("#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE\n");
   printer->Print("    , pb::IBufferMessage\n");
@@ -692,7 +692,6 @@ void MessageGenerator::GenerateMergingMethods(io::Printer* printer) {
   WriteGeneratedCodeAttributes(printer);
   printer->Print("void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {\n");
   printer->Indent();
-  printer->Print("Clear();\n");
   GenerateMainParseLoop(printer, true);
   printer->Outdent();
   printer->Print("}\n"); // method
