@@ -598,6 +598,14 @@ namespace Google.Protobuf
         /// </summary>
         public int SpaceLeft => WriteBufferHelper.GetSpaceLeft(ref state);
 
+        /// <summary>
+        /// Clear function.
+        /// </summary>
+        public void Clear()
+        {
+            this.state.position = 0;
+        }
+
         internal byte[] InternalBuffer => buffer;
 
         internal Stream InternalOutputStream => output;

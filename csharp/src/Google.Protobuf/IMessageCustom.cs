@@ -3,8 +3,13 @@
     /// <summary>
     /// Interface for a Protocol Buffers message to clear.
     /// </summary>
-    public interface IMessageClear
+    public interface IMessageCustom
     {
+        /// <summary>
+        /// Init function.
+        /// </summary>
+        void Init();
+
         /// <summary>
         /// Clear function.
         /// </summary>
@@ -17,11 +22,7 @@
     /// the implementation class.
     /// </summary>
     /// <typeparam name="T">The message type.</typeparam>
-    public interface IMessageClear<T> : IMessageClear where T : IMessageClear<T>
+    public interface IMessageCustom<T> : IMessageCustom where T : IMessageCustom<T>
     {
-        /// <summary>
-        /// Clear function.
-        /// </summary>
-        //void Clear();
     }
 }

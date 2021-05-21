@@ -53,6 +53,7 @@ class MessageGenerator : public SourceGeneratorBase {
   MessageGenerator(const MessageGenerator&) = delete;
   MessageGenerator& operator=(const MessageGenerator&) = delete;
 
+  void GenerateInitCode(io::Printer* printer);
   void GenerateCloningCode(io::Printer* printer);
   void GenerateFreezingCode(io::Printer* printer);
   void GenerateFrameworkMethods(io::Printer* printer);

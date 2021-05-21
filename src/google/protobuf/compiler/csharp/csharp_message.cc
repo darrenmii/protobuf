@@ -128,7 +128,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
     printer->Print(vars, "pb::IExtendableMessage<$class_name$>\n");
   }
   else {
-    printer->Print(vars, "pb::IMessage<$class_name$>, pb::IMessageClear<$class_name$>\n");
+    printer->Print(vars, "pb::IMessage<$class_name$>, pb::IMessageCustom<$class_name$>\n");
   }
   printer->Print("#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE\n");
   printer->Print("    , pb::IBufferMessage\n");
@@ -203,6 +203,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
     "}\n\n"
     "partial void OnConstruction();\n\n");
 
+  GenerateInitCode(printer);
   GenerateCloningCode(printer);
   GenerateFreezingCode(printer);
 
@@ -226,7 +227,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
   // oneof properties (for real oneofs, which come before synthetic ones)
   for (int i = 0; i < descriptor_->real_oneof_decl_count(); i++) {
     const OneofDescriptor* oneof = descriptor_->oneof_decl(i);
-    vars["name"] = UnderscoresToCamelCase(oneof->name(), false);
+    vars["name"] = UnderscoresToCamelCase(oneof->name(), false); 
     vars["property_name"] = UnderscoresToCamelCase(oneof->name(), true);
     vars["original_name"] = oneof->name();
     printer->Print(
@@ -371,6 +372,24 @@ bool MessageGenerator::HasNestedGeneratedTypes()
     }
   }
   return false;
+}
+
+void MessageGenerator::GenerateInitCode(io::Printer* printer)
+{
+    WriteGeneratedCodeAttributes(printer);
+    printer->Print("public void Init() {\n");
+    printer->Indent();
+    for (int i = 0; i < descriptor_->field_count(); i++) {
+        const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
+        if (fieldDescriptor->type() == FieldDescriptor::Type::TYPE_MESSAGE &&
+            fieldDescriptor->label() != FieldDescriptorProto_Label::FieldDescriptorProto_Label_LABEL_REPEATED) {
+            printer->Print("$name$_ = new $type$();\n",
+                "name", fieldDescriptor->name(),
+                "type", fieldDescriptor->message_type()->name());
+        }
+    }
+    printer->Outdent();
+    printer->Print("}\n\n");
 }
 
 void MessageGenerator::GenerateCloningCode(io::Printer* printer) {
