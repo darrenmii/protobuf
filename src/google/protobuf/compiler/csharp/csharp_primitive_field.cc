@@ -274,6 +274,12 @@ void PrimitiveFieldGenerator::GenerateClearCode(io::Printer* printer) {
     "$property_name$ = $default_value$;\n");
 }
 
+void PrimitiveFieldGenerator::GenerateCopyCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "$name$_ = other.$name$_;\n");
+}
+
 PrimitiveOneofFieldGenerator::PrimitiveOneofFieldGenerator(
     const FieldDescriptor* descriptor, int presenceIndex, const Options *options)
     : PrimitiveFieldGenerator(descriptor, presenceIndex, options) {

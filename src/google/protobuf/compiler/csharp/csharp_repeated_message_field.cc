@@ -173,6 +173,23 @@ void RepeatedMessageFieldGenerator::GenerateClearCode(io::Printer* printer) {
     "for (int i = 0; i < $name$_.Count; i++)\n  $name$_[i].Clear();\n$name$_.Clear();\n");
 }
 
+void RepeatedMessageFieldGenerator::GenerateCopyCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "if ($name$_.Count < other.$property_name$.Count) {\n"
+    "  var diff = other.$property_name$.Count - $name$_.Count;\n"
+    "  for (int i = 0; i < diff; i++)\n"
+    "    $name$_.Add(pb::MessagePool<$type_name$>.GetPool().Pop());\n"
+    "} else if ($name$_.Count > other.$property_name$.Count) {\n"
+    "  for (int i = $name$_.Count - 1; i >= other.$property_name$.Count; i--) {\n"
+    "    pb::MessagePool<$type_name$>.GetPool().Push($name$_[i]);\n"
+    "    $name$_.RemoveAt(i);\n"
+    "  }\n"
+    "}\n"
+    "for (int i = 0; i < $name$_.Count; i++)\n"
+    "  $name$_[i].Copy(other.$property_name$[i]);\n");
+}
+
 }  // namespace csharp
 }  // namespace compiler
 }  // namespace protobuf

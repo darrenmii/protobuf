@@ -193,6 +193,14 @@ void MessageFieldGenerator::GenerateClearCode(io::Printer* printer) {
     "}\n");
 }
 
+void MessageFieldGenerator::GenerateCopyCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "if ($has_property_check$) {\n"
+    "  $name$_.Copy(other.$property_name$);\n"
+    "}\n");
+}
+
 void MessageFieldGenerator::GenerateCloningCode(io::Printer* printer) {
   printer->Print(variables_,
     "$name$_ = other.$has_property_check$ ? other.$name$_.Clone() : null;\n");

@@ -205,6 +205,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
 
   GenerateInitCode(printer);
   GenerateCloningCode(printer);
+  GenerateCopyCode(printer);
   GenerateFreezingCode(printer);
 
   // Fields/properties
@@ -354,9 +355,14 @@ void MessageGenerator::Generate(io::Printer* printer) {
       "\n");
   }
 
+  // Generate Pool
+  printer->Print("\nprivate static pb::MessagePool<$class_name$> pool_;\n",
+    "class_name", class_name());
+
   printer->Outdent();
   printer->Print("}\n");
   printer->Print("\n");
+
 }
 
 // Helper to work out whether we need to generate a class to hold nested types/enums.
@@ -451,6 +457,22 @@ void MessageGenerator::GenerateCloningCode(io::Printer* printer) {
     "public $class_name$ Clone() {\n"
     "  return new $class_name$(this);\n"
     "}\n\n");
+}
+
+void MessageGenerator::GenerateCopyCode(io::Printer* printer) {
+    WriteGeneratedCodeAttributes(printer);
+    printer->Print("public void Copy($class_name$ other) {\n",
+        "class_name", class_name());
+    printer->Indent();
+
+    for (int i = 0; i < descriptor_->field_count(); i++) {
+        const FieldDescriptor* field = descriptor_->field(i);
+        std::unique_ptr<FieldGeneratorBase> generator(CreateFieldGeneratorInternal(field));
+        generator->GenerateCopyCode(printer);
+    }
+
+    printer->Outdent();
+    printer->Print("}\n\n");
 }
 
 void MessageGenerator::GenerateFreezingCode(io::Printer* printer) {

@@ -144,6 +144,21 @@ void RepeatedPrimitiveFieldGenerator::GenerateClearCode(io::Printer* printer) {
     "for (int i = 0; i < $name$_.Count; i++)\n  $name$_[i] = $default_value$;\n$name$_.Clear();\n");
 }
 
+void RepeatedPrimitiveFieldGenerator::GenerateCopyCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "if ($name$_.Count < other.$property_name$.Count) {\n"
+    "  var diff = other.$property_name$.Count - $name$_.Count;\n"
+    "  for (int i = 0; i < diff; i++)\n"
+    "    $name$_.Add($default_value$);\n"
+    "} else if ($name$_.Count > other.$property_name$.Count) {\n"
+    "  for (int i = $name$_.Count - 1; i>= other.$property_name$.Count; i--)\n"
+    "    $name$_.RemoveAt(i);\n"
+    "}\n"
+    "for (int i = 0; i < $name$_.Count; i++)\n"
+    "  $name$_[i] = other.$property_name$[i];\n");
+}
+
 }  // namespace csharp
 }  // namespace compiler
 }  // namespace protobuf
