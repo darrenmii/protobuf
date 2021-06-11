@@ -55,7 +55,11 @@ namespace Google.Protobuf
     {
         private static readonly ByteString empty = new ByteString(new byte[0]);
 
-        private readonly ReadOnlyMemory<byte> bytes;
+        private int _bytesSize = 512;
+        private byte[] _bytes;
+        private int _usedSize;
+
+        private ReadOnlyMemory<byte> bytes;
 
         /// <summary>
         /// Internal use only. Ensure that the provided memory is not mutated and belongs to this instance.
@@ -73,6 +77,36 @@ namespace Google.Protobuf
         internal static ByteString AttachBytes(byte[] bytes)
         {
             return AttachBytes(bytes.AsMemory());
+        }
+
+        public ByteString()
+        {
+            _bytes = new byte[_bytesSize];
+            bytes = new ReadOnlyMemory<byte>(_bytes, 0, 0);
+        }
+
+        public byte[] GetBuffer
+        {
+            get { return _bytes; }
+        }
+
+        public int UsedSize
+        {
+            get { return _usedSize; }
+            set {
+                if (value > _bytesSize)
+                    return;
+                _usedSize = value;
+                bytes = new ReadOnlyMemory<byte>(_bytes, 0, value);
+            }
+        }
+
+        public void SetBufferSize(int size)
+        {
+            _bytesSize = size;
+            _bytes = new byte[_bytesSize];
+            bytes = new ReadOnlyMemory<byte>(_bytes, 0, size);
+            _usedSize = 0;
         }
 
         /// <summary>
@@ -249,6 +283,28 @@ namespace Google.Protobuf
         public static ByteString CopyFromUtf8(string text)
         {
             return CopyFrom(text, Encoding.UTF8);
+        }
+
+        public void CopyFrom(byte[] bytes, int count)
+        {
+            if (_bytes.Length < count)
+            {
+                while (_bytesSize < count)
+                {
+                    _bytesSize *= 2;
+                }
+                _bytes = new byte[_bytesSize];
+            }
+            Buffer.BlockCopy(bytes, 0, _bytes, 0, count);
+            _usedSize = count;
+            this.bytes = new ReadOnlyMemory<byte>(_bytes, 0, count);
+        }
+
+        public void CopyFrom(ByteString other)
+        {
+            var otherBytes = other.GetBuffer;
+            var otherSize = other.UsedSize;
+            CopyFrom(otherBytes, otherSize);
         }
 
         /// <summary>
@@ -429,6 +485,12 @@ namespace Google.Protobuf
                 var array = bytes.ToArray();
                 outputStream.Write(array, 0, array.Length);
             }
+        }
+
+        public void Clear()
+        {
+            bytes = new ReadOnlyMemory<byte>(_bytes, 0, 0);
+            _usedSize = 0;
         }
     }
 }

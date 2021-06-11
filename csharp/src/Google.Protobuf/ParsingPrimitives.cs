@@ -425,6 +425,8 @@ namespace Google.Protobuf
             return Unsafe.ReadUnaligned<float>(ref MemoryMarshal.GetReference(tempSpan));
         }
 
+        private static byte[] StaticBytes = new byte[4096];
+
         /// <summary>
         /// Reads a fixed size of bytes from the input.
         /// </summary>
@@ -441,7 +443,7 @@ namespace Google.Protobuf
             if (size <= state.bufferSize - state.bufferPos)
             {
                 // We have all the bytes we need already.
-                byte[] bytes = new byte[size];
+                byte[] bytes = StaticBytes;
                 buffer.Slice(state.bufferPos, size).CopyTo(bytes);
                 state.bufferPos += size;
                 return bytes;
@@ -569,6 +571,14 @@ namespace Google.Protobuf
         {
             int length = ParsingPrimitives.ParseLength(ref buffer, ref state);
             return ByteString.AttachBytes(ParsingPrimitives.ReadRawBytes(ref buffer, ref state, length));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ReadBytes(ref ReadOnlySpan<byte> buffer, ref ParserInternalState state, ByteString byteString)
+        {
+            int length = ParsingPrimitives.ParseLength(ref buffer, ref state);
+            var bytes = ParsingPrimitives.ReadRawBytes(ref buffer, ref state, length);
+            byteString.CopyFrom(bytes, length);
         }
 
         /// <summary>

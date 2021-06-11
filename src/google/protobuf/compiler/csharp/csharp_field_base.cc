@@ -325,7 +325,8 @@ std::string FieldGeneratorBase::GetStringDefaultValueInternal(const FieldDescrip
 
 std::string FieldGeneratorBase::GetBytesDefaultValueInternal(const FieldDescriptor* descriptor) {
     if (descriptor->default_value_string().empty())
-        return "pb::ByteString.Empty";
+        //return "pb::ByteString.Empty";
+        return "new pb::ByteString()";
     else
         return "pb::ByteString.FromBase64(\"" + StringToBase64(descriptor->default_value_string()) + "\")";
 }

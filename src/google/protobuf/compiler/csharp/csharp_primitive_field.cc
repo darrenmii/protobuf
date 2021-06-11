@@ -188,9 +188,15 @@ void PrimitiveFieldGenerator::GenerateMergingCode(io::Printer* printer) {
 void PrimitiveFieldGenerator::GenerateParsingCode(io::Printer* printer) {
   // Note: invoke the property setter rather than writing straight to the field,
   // so that we can normalize "null to empty" for strings and bytes.
-  printer->Print(
-    variables_,
-    "$property_name$ = input.Read$capitalized_type_name$();\n");
+  if (variables_["capitalized_type_name"] == "Bytes") {
+    printer->Print(
+      variables_,
+      "input.Read$capitalized_type_name$($name$_);\n");
+  } else {
+    printer->Print(
+      variables_,
+      "$property_name$ = input.Read$capitalized_type_name$();\n");
+  }
 }
 
 void PrimitiveFieldGenerator::GenerateSerializationCode(io::Printer* printer) {
@@ -269,15 +275,27 @@ void PrimitiveFieldGenerator::GenerateExtensionCode(io::Printer* printer) {
 }
 
 void PrimitiveFieldGenerator::GenerateClearCode(io::Printer* printer) {
-  printer->Print(
-    variables_,
-    "$property_name$ = $default_value$;\n");
+  if (variables_["capitalized_type_name"] == "Bytes") {
+    printer->Print(
+      variables_,
+      "$name$_.Clear();\n");
+  } else {
+    printer->Print(
+      variables_,
+      "$property_name$ = $default_value$;\n");
+  }
 }
 
 void PrimitiveFieldGenerator::GenerateCopyCode(io::Printer* printer) {
-  printer->Print(
-    variables_,
-    "$name$_ = other.$name$_;\n");
+  if (variables_["capitalized_type_name"] == "Bytes") {
+    printer->Print(
+      variables_,
+      "$name$_.CopyFrom(other.$name$_);\n");
+  } else {
+    printer->Print(
+      variables_,
+      "$name$_ = other.$name$_;\n");
+  }
 }
 
 PrimitiveOneofFieldGenerator::PrimitiveOneofFieldGenerator(

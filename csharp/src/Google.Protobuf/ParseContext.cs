@@ -248,6 +248,12 @@ namespace Google.Protobuf
         {
             return ParsingPrimitives.ReadBytes(ref buffer, ref state);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadBytes(ByteString byteString)
+        {
+            ParsingPrimitives.ReadBytes(ref buffer, ref state, byteString);
+        }
         /// <summary>
         /// Reads a uint32 field value from the input.
         /// </summary>
