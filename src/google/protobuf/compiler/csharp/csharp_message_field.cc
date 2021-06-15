@@ -201,6 +201,12 @@ void MessageFieldGenerator::GenerateCopyCode(io::Printer* printer) {
     "}\n");
 }
 
+void MessageFieldGenerator::GenerateInitCode(io::Printer* printer) {
+  printer->Print(
+    variables_,
+    "$name$_ = new $type_name$();\n");
+}
+
 void MessageFieldGenerator::GenerateCloningCode(io::Printer* printer) {
   printer->Print(variables_,
     "$name$_ = other.$has_property_check$ ? other.$name$_.Clone() : null;\n");

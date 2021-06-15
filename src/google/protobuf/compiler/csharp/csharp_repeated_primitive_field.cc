@@ -159,6 +159,9 @@ void RepeatedPrimitiveFieldGenerator::GenerateCopyCode(io::Printer* printer) {
     "  $name$_[i] = other.$property_name$[i];\n");
 }
 
+void RepeatedPrimitiveFieldGenerator::GenerateInitCode(io::Printer* printer) {
+}
+
 }  // namespace csharp
 }  // namespace compiler
 }  // namespace protobuf

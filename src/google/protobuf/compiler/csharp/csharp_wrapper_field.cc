@@ -219,6 +219,9 @@ void WrapperFieldGenerator::GenerateCopyCode(io::Printer* printer) {
     "$property_name$ = other.$property_name$;\n");
 }
 
+void WrapperFieldGenerator::GenerateInitCode(io::Printer* printer) {
+}
+
 WrapperOneofFieldGenerator::WrapperOneofFieldGenerator(
     const FieldDescriptor* descriptor, int presenceIndex, const Options *options)
     : WrapperFieldGenerator(descriptor, presenceIndex, options) {

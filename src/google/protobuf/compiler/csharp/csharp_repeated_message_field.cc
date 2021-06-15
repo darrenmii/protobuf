@@ -190,6 +190,9 @@ void RepeatedMessageFieldGenerator::GenerateCopyCode(io::Printer* printer) {
     "  $name$_[i].Copy(other.$property_name$[i]);\n");
 }
 
+void RepeatedMessageFieldGenerator::GenerateInitCode(io::Printer* printer) {
+}
+
 }  // namespace csharp
 }  // namespace compiler
 }  // namespace protobuf

@@ -199,11 +199,14 @@ void MessageGenerator::Generate(io::Printer* printer) {
   printer->Print(
     vars,
     "public $class_name$() {\n"
-    "  OnConstruction();\n"
+    "  OnConstruction();\n");
+  printer->Indent();
+  GenerateInitCode(printer);
+  printer->Outdent();
+  printer->Print(
     "}\n\n"
     "partial void OnConstruction();\n\n");
 
-  GenerateInitCode(printer);
   GenerateCloningCode(printer);
   GenerateCopyCode(printer);
   GenerateFreezingCode(printer);
@@ -382,20 +385,14 @@ bool MessageGenerator::HasNestedGeneratedTypes()
 
 void MessageGenerator::GenerateInitCode(io::Printer* printer)
 {
-    WriteGeneratedCodeAttributes(printer);
-    printer->Print("public void Init() {\n");
-    printer->Indent();
-    for (int i = 0; i < descriptor_->field_count(); i++) {
-        const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
-        if (fieldDescriptor->type() == FieldDescriptor::Type::TYPE_MESSAGE &&
-            fieldDescriptor->label() != FieldDescriptorProto_Label::FieldDescriptorProto_Label_LABEL_REPEATED) {
-            printer->Print("$name$_ = new $type$();\n",
-                "name", fieldDescriptor->name(),
-                "type", fieldDescriptor->message_type()->name());
-        }
+  for (int i = 0; i < descriptor_->field_count(); i++) {
+    const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
+    std::unique_ptr<FieldGeneratorBase> generator(CreateFieldGeneratorInternal(fieldDescriptor));
+    if (fieldDescriptor->type() == FieldDescriptor::Type::TYPE_MESSAGE &&
+      fieldDescriptor->label() != FieldDescriptorProto_Label::FieldDescriptorProto_Label_LABEL_REPEATED) {
+      generator->GenerateInitCode(printer);
     }
-    printer->Outdent();
-    printer->Print("}\n\n");
+  }
 }
 
 void MessageGenerator::GenerateCloningCode(io::Printer* printer) {
@@ -460,19 +457,19 @@ void MessageGenerator::GenerateCloningCode(io::Printer* printer) {
 }
 
 void MessageGenerator::GenerateCopyCode(io::Printer* printer) {
-    WriteGeneratedCodeAttributes(printer);
-    printer->Print("public void Copy($class_name$ other) {\n",
-        "class_name", class_name());
-    printer->Indent();
+  WriteGeneratedCodeAttributes(printer);
+  printer->Print("public void Copy($class_name$ other) {\n",
+    "class_name", class_name());
+  printer->Indent();
 
-    for (int i = 0; i < descriptor_->field_count(); i++) {
-        const FieldDescriptor* field = descriptor_->field(i);
-        std::unique_ptr<FieldGeneratorBase> generator(CreateFieldGeneratorInternal(field));
-        generator->GenerateCopyCode(printer);
-    }
+  for (int i = 0; i < descriptor_->field_count(); i++) {
+    const FieldDescriptor* field = descriptor_->field(i);
+    std::unique_ptr<FieldGeneratorBase> generator(CreateFieldGeneratorInternal(field));
+    generator->GenerateCopyCode(printer);
+  }
 
-    printer->Outdent();
-    printer->Print("}\n\n");
+  printer->Outdent();
+  printer->Print("}\n\n");
 }
 
 void MessageGenerator::GenerateFreezingCode(io::Printer* printer) {

@@ -30,7 +30,6 @@ namespace Google.Protobuf
                 return _pooledObjects.Pop();
 
             var obj = new T();
-            obj.Init();
             return obj;
         }
 

@@ -298,6 +298,9 @@ void PrimitiveFieldGenerator::GenerateCopyCode(io::Printer* printer) {
   }
 }
 
+void PrimitiveFieldGenerator::GenerateInitCode(io::Printer* printer) {
+}
+
 PrimitiveOneofFieldGenerator::PrimitiveOneofFieldGenerator(
     const FieldDescriptor* descriptor, int presenceIndex, const Options *options)
     : PrimitiveFieldGenerator(descriptor, presenceIndex, options) {

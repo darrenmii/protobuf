@@ -6,11 +6,6 @@
     public interface IMessageCustom
     {
         /// <summary>
-        /// Init function.
-        /// </summary>
-        void Init();
-
-        /// <summary>
         /// Clear function.
         /// </summary>
         void Clear();

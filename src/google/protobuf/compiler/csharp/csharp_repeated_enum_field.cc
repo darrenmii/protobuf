@@ -160,6 +160,9 @@ void RepeatedEnumFieldGenerator::GenerateCopyCode(io::Printer* printer) {
     "  $name$_[i] = other[i];\n");
 }
 
+void RepeatedEnumFieldGenerator::GenerateInitCode(io::Printer* printer) {
+}
+
 void RepeatedEnumFieldGenerator::GenerateFreezingCode(io::Printer* printer) {
 }
 

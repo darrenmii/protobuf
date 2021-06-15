@@ -63,6 +63,7 @@ class PrimitiveFieldGenerator : public FieldGeneratorBase {
   virtual void GenerateExtensionCode(io::Printer* printer);
   virtual void GenerateClearCode(io::Printer* printer);
   virtual void GenerateCopyCode(io::Printer* printer);
+  virtual void GenerateInitCode(io::Printer* printer);
 
   virtual void WriteHash(io::Printer* printer);
   virtual void WriteEquals(io::Printer* printer);
