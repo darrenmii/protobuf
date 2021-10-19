@@ -148,16 +148,16 @@ void RepeatedEnumFieldGenerator::GenerateClearCode(io::Printer* printer) {
 void RepeatedEnumFieldGenerator::GenerateCopyCode(io::Printer* printer) {
   printer->Print(
     variables_,
-    "if ($name$_.Count < other.Count) {\n"
-    "  var diff = other.Count - $name$_.Count;\n"
+    "if ($name$_.Count < other.$property_name$.Count) {\n"
+    "  var diff = other.$property_name$.Count - $name$_.Count;\n"
     "  for (int i = 0; i < diff; i++)\n"
     "    $name$_.Add($default_value$);\n"
     "} else {\n"
-    "  for (int i = $name$_.Count - 1; i >= other.Count; i--)\n"
+    "  for (int i = $name$_.Count - 1; i >= other.$property_name$.Count; i--)\n"
     "    $name$_.RemoveAt(i);\n"
     "}\n"
     "for (int i = 0; i < $name$_.Count; i++)\n"
-    "  $name$_[i] = other[i];\n");
+    "  $name$_[i] = other.$property_name$[i];\n");
 }
 
 void RepeatedEnumFieldGenerator::GenerateInitCode(io::Printer* printer) {

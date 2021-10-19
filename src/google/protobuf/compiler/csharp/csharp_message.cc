@@ -231,7 +231,7 @@ void MessageGenerator::Generate(io::Printer* printer) {
   // oneof properties (for real oneofs, which come before synthetic ones)
   for (int i = 0; i < descriptor_->real_oneof_decl_count(); i++) {
     const OneofDescriptor* oneof = descriptor_->oneof_decl(i);
-    vars["name"] = UnderscoresToCamelCase(oneof->name(), false); 
+    vars["name"] = UnderscoresToCamelCase(oneof->name(), false);
     vars["property_name"] = UnderscoresToCamelCase(oneof->name(), true);
     vars["original_name"] = oneof->name();
     printer->Print(
@@ -604,7 +604,7 @@ void MessageGenerator::GenerateMessageSerializationMethods(io::Printer* printer)
   printer->Print("return size;\n");
   printer->Outdent();
   printer->Print("}\n\n");
-  
+
   WriteGeneratedCodeAttributes(printer);
   printer->Print(
     "public void Clear() {\n");
