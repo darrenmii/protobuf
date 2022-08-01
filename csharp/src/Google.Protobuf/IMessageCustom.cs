@@ -19,5 +19,7 @@
     /// <typeparam name="T">The message type.</typeparam>
     public interface IMessageCustom<T> : IMessageCustom where T : IMessageCustom<T>
     {
+        void Copy(T other);
+        T Clone();
     }
 }

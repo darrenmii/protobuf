@@ -349,6 +349,26 @@ namespace Google.Protobuf.Collections
         }
 
         /// <summary>
+        /// Adds the specified item to the collection.
+        /// </summary>
+        /// <returns> Return an item </returns>
+        public T Add(Func<T> func)
+        {
+            if (count < array.Length && array[count] != null)
+            {
+                var item = array[count];
+                count++;
+                return item;
+            }
+            else
+            {
+                var item = func();
+                Add(item);
+                return item;
+            }
+        }
+
+        /// <summary>
         /// Removes all items from the collection.
         /// </summary>
         public void Clear()
